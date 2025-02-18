@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.sms.mapper.SmsUserMapper">
+
+    <resultMap type="com.ruoyi.sms.domain.SmsUser" id="SmsUserResult">
+        <id     property="id"       column="id"        />
+        <result property="account"  column="account"   />
+        <result property="password" column="password"  />
+        <result property="apiKey"   column="api_key"   />
+        <result property="secretKey" column="secret_key"/>
+        <result property="balance"  column="balance"   />
+    </resultMap>
+
+    <sql id="selectSmsUserVo">
+        select id, account, password, api_key, secret_key, balance
+        from sys_sms_user
+    </sql>
+
+    <select id="selectSmsUserList" parameterType="SmsUser" resultMap="SmsUserResult">
+        <include refid="selectSmsUserVo"/>
+        <where>
+            <if test="account != null and account != ''">
+                AND account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                AND password = #{password}
+            </if>
+            <if test="apiKey != null and apiKey != ''">
+                AND api_key = #{apiKey}
+            </if>
+            <if test="secretKey != null and secretKey != ''">
+                AND secret_key = #{secretKey}
+            </if>
+            <if test="balance != null">
+                AND balance = #{balance}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSmsUserById" parameterType="Long" resultMap="SmsUserResult">
+        <include refid="selectSmsUserVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSmsUser" parameterType="com.ruoyi.sms.domain.SmsUser" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_sms_user (
+            account,
+            password,
+            api_key,
+            secret_key,
+            balance
+        ) values (
+            #{account},
+            #{password},
+            #{apiKey},
+            #{secretKey},
+            #{balance}
+        )
+    </insert>
+
+    <update id="updateSmsUser" parameterType="com.ruoyi.sms.domain.SmsUser">
+        update sys_sms_user
+        <set>
+            <if test="account != null">account = #{account},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="apiKey != null">api_key = #{apiKey},</if>
+            <if test="secretKey != null">secret_key = #{secretKey},</if>
+            <if test="balance != null">balance = #{balance},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsUserById" parameterType="Long">
+        delete from sys_sms_user where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsUserByIds" parameterType="String">
+        delete from sys_sms_user where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByAccessKey" parameterType="String" resultMap="SmsUserResult">
+        <include refid="selectSmsUserVo"/>
+        where api_key = #{accessKey}
+    </select>
+
+    <!-- 扣减余额 -->
+    <update id="deductBalance">
+        update sys_sms_user 
+        set balance = balance - #{amount}
+        where id = #{userId} and balance >= #{amount}
+    </update>
+</mapper>

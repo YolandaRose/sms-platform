@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysSmsUserMapper">
+    
+    <resultMap type="SysSmsUser" id="SysSmsUserResult">
+        <result property="id"    column="id"    />
+        <result property="account"    column="account"    />
+        <result property="password"    column="password"    />
+        <result property="apiKey"    column="api_key"    />
+        <result property="secretKey"    column="secret_key"    />
+        <result property="balance"    column="balance"    />
+    </resultMap>
+
+    <sql id="selectSysSmsUserVo">
+        select id, account, password, api_key, secret_key, balance from sys_sms_user
+    </sql>
+
+    <select id="selectSysSmsUserList" parameterType="SysSmsUser" resultMap="SysSmsUserResult">
+        <include refid="selectSysSmsUserVo"/>
+        <where>  
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="password != null  and password != ''"> and password = #{password}</if>
+            <if test="apiKey != null  and apiKey != ''"> and api_key = #{apiKey}</if>
+            <if test="secretKey != null  and secretKey != ''"> and secret_key = #{secretKey}</if>
+            <if test="balance != null "> and balance = #{balance}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysSmsUserById" parameterType="Long" resultMap="SysSmsUserResult">
+        <include refid="selectSysSmsUserVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysSmsUser" parameterType="SysSmsUser" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_sms_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="account != null and account != ''">account,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="apiKey != null and apiKey != ''">api_key,</if>
+            <if test="secretKey != null and secretKey != ''">secret_key,</if>
+            <if test="balance != null">balance,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="account != null and account != ''">#{account},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="apiKey != null and apiKey != ''">#{apiKey},</if>
+            <if test="secretKey != null and secretKey != ''">#{secretKey},</if>
+            <if test="balance != null">#{balance},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysSmsUser" parameterType="SysSmsUser">
+        update sys_sms_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="account != null and account != ''">account = #{account},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="apiKey != null and apiKey != ''">api_key = #{apiKey},</if>
+            <if test="secretKey != null and secretKey != ''">secret_key = #{secretKey},</if>
+            <if test="balance != null">balance = #{balance},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysSmsUserById" parameterType="Long">
+        delete from sys_sms_user where id = #{id}
+    </delete>
+
+    <delete id="deleteSysSmsUserByIds" parameterType="String">
+        delete from sys_sms_user where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
